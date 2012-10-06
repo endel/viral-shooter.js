@@ -1,6 +1,7 @@
 var AudioInterface = (function() {
   var
-    //AUDIO_FILE = 'sounds/MC_Hammer_-_U_Cant_Touch_This',
+    AUDIO_FILE = 'sounds/MC_Hammer_-_U_Cant_Touch_This',
+    //AUDIO_FILE = 'sounds/RickRoll',
     //AUDIO_FILE = 'sounds/01_friday',
     //AUDIO_FILE = 'sounds/19092_psy_-_gangnam_style_koreyskiy_hardbas',
     //AUDIO_FILE = 'sounds/nyan2',
@@ -8,7 +9,7 @@ var AudioInterface = (function() {
     fftCtx = fft.getContext( '2d' ),
     waveform = document.getElementById( 'waveform' ),
     waveformCtx = waveform.getContext( '2d' ),
-    dancer, kick,
+    dancer, kicks, off_kicks,
     kick_interval = null,
     canKick = true;
 
@@ -21,19 +22,31 @@ var AudioInterface = (function() {
   });
 
   dancer = new Dancer();
-  kick = dancer.createKick({
+  kicks = dancer.createKick({
+    //frequency: [0, 10],
+    threshold: 0.2,
+    //decay:     0.02,
     onKick: function () {
       if (canKick) {
-        console.log("Kick!");
+        //console.log("Kick!");
         canKick = false;
         setTimeout(function() {
           canKick = true;
-        }, 150);
+        }, 80);
       }
       fftCtx.fillStyle = '#ff0077';
     },
     offKick: function () {
       fftCtx.fillStyle = '#666';
+    }
+  }).on();
+
+  off_kicks = dancer.createKick({
+    //frequency: [0, 5],
+    threshold: 0.2,
+    //decay:     0.05,
+    onKick: function () {
+      console.log("Off kick!");
     }
   }).on();
 
