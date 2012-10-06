@@ -1,50 +1,16 @@
-//var camera, scene, renderer;
-//var geometry, material, mesh;
-
-//init();
-//animate();
-
-//function init() {
-
-    //camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-    //camera.position.z = 1000;
-
-    //scene = new THREE.Scene();
-
-    //geometry = new THREE.CubeGeometry( 200, 200, 200 );
-    //material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
-
-    //mesh = new THREE.Mesh( geometry, material );
-    //scene.add( mesh );
-
-    //renderer = new THREE.CanvasRenderer();
-    //renderer.setSize( window.innerWidth, window.innerHeight );
-
-    //document.body.appendChild( renderer.domElement );
-
-//}
-
-//function animate() {
-
-    //// note: three.js includes requestAnimationFrame shim
-    //requestAnimationFrame( animate );
-
-    //mesh.rotation.x += 0.01;
-    //mesh.rotation.y += 0.02;
-
-    //renderer.render( scene, camera );
-
-//}
-
-console.log("Hey!");
-
-(function () {
-
+var AudioInterface = (function() {
   var
-    AUDIO_FILE = 'sounds/19092_psy_-_gangnam_style_koreyskiy_hardbas.mp3',
+    //AUDIO_FILE = 'sounds/MC_Hammer_-_U_Cant_Touch_This',
+    //AUDIO_FILE = 'sounds/01_friday',
+    //AUDIO_FILE = 'sounds/19092_psy_-_gangnam_style_koreyskiy_hardbas',
+    //AUDIO_FILE = 'sounds/nyan2',
     fft = document.getElementById( 'fft' ),
-    ctx = fft.getContext( '2d' ),
-    dancer, kick;
+    fftCtx = fft.getContext( '2d' ),
+    waveform = document.getElementById( 'waveform' ),
+    waveformCtx = waveform.getContext( '2d' ),
+    dancer, kick,
+    kick_interval = null,
+    canKick = true;
 
   /*
    * Dancer.js magic
@@ -57,49 +23,57 @@ console.log("Hey!");
   dancer = new Dancer();
   kick = dancer.createKick({
     onKick: function () {
-      ctx.fillStyle = '#ff0077';
+      if (canKick) {
+        console.log("Kick!");
+        canKick = false;
+        setTimeout(function() {
+          canKick = true;
+        }, 150);
+      }
+      fftCtx.fillStyle = '#ff0077';
     },
     offKick: function () {
-      ctx.fillStyle = '#666';
+      fftCtx.fillStyle = '#666';
     }
   }).on();
 
   dancer
     .fft( fft, { fillStyle: '#666' })
+    .waveform( waveform, { strokeStyle: '#666'}) //, strokeWidth: 2
     .load({ src: AUDIO_FILE, codecs: [ 'mp3' ]}); // 'ogg',
 
   Dancer.isSupported() || loaded();
   !dancer.isLoaded() ? dancer.bind( 'loaded', loaded ) : loaded();
 
   /*
-   * Loading
+   * OnLoad binding
    */
-
   function loaded () {
     var
-      loading = document.getElementById( 'loading' ),
+      loading = $('#loading'),
       anchor  = document.createElement('A'),
-      supported = Dancer.isSupported(),
-      p;
+      supported = Dancer.isSupported();
 
     anchor.appendChild( document.createTextNode( supported ? 'Play!' : 'Close' ) );
     anchor.setAttribute( 'href', '#' );
     loading.innerHTML = '';
-    loading.appendChild( anchor );
+    $(loading).append( anchor );
 
     if ( !supported ) {
-      p = document.createElement('P');
-      p.appendChild( document.createTextNode( 'Your browser does not currently support either Web Audio API or Audio Data API. The audio may play, but the visualizers will not move to the music; check out the latest Chrome or Firefox browsers!' ) );
-      loading.appendChild( p );
+      var p = $('<p>Your browser does not currently support either Web Audio API or Audio Data API. The audio may play, but the visualizers will not move to the music; check out the latest Chrome or Firefox browsers!</p>');
+      $(loading).append( p );
     }
 
-    anchor.addEventListener( 'click', function () {
+    $(anchor).click(function () {
       dancer.play();
-      document.getElementById('loading').style.display = 'none';
+      $(loading).remove();
     });
   }
 
   // For debugging
   window.dancer = dancer;
 
+  //var AudioInterface = function(options) {
+  //};
+  //return AudioInterface;
 })();

@@ -10,11 +10,23 @@
       a { color:#0078ff; }
     </style>
 
+    <!--jQuery-->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+
+    <!--Dancer.js-->
     <script type="text/javascript" src="lib/dancer.min.js"></script>
+    <script type="text/javascript" src="lib/plugins/dancer.fft.js"></script>
+    <script type="text/javascript" src="lib/plugins/dancer.waveform.js"></script>
+
+    <!--Three.js-->
     <script type="text/javascript" src="lib/three.min.js"></script>
+
   </head>
   <body>
-    <!--<script type="text/javascript" src="src/game.js"></script>-->
+    <h1 id="loading"></h1>
+    <canvas id="fft" height="20" width="100"></canvas>
+    <canvas id="waveform" height="20" width="100"></canvas>
+    <script type="text/javascript" src="src/game.js"></script>
   </body>
 </html>
 
